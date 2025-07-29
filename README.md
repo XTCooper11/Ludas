@@ -1,5 +1,5 @@
 # Ludas
-# Engine WIP
+# Engine WIP*
 
 ![Logo with replaced A](https://github.com/XTCooper11/Ludas/blob/main/images/Ludas-replacedA.png)
 
@@ -8,7 +8,19 @@ This engine is a hobby project built to be a feature-rich fully Python-based gam
 
 The name comes from a *Latin* phrase meaning "you play", because at the heart of every game is the player.
 
+Table of Contents:
+1. ## [Features](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#features-1)
+  ### - [Graphics](https://github.com/XTCooper11/Ludas/blob/main/README.md#graphics)
+  ### - [Audio](https://github.com/XTCooper11/Ludas/blob/main/README.md#audio)
+  ### - [Physics](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#physics)
+  ### - [Scripting](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#scripting)
+2. ## [Roadmap](https://github.com/XTCooper11/Ludas/blob/main/README.md#roadmap-1)
+3. ## [License](https://github.com/XTCooper11/Ludas/blob/main/README.md#license-1)
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
+
+---
+# Engine WIP*
+---
 
 ## Features
 
@@ -19,8 +31,6 @@ The name comes from a *Latin* phrase meaning "you play", because at the heart of
 #### (WIP) 3D:
  Ludas uses ModernGL for low-level shader-driven 3D rendering, integrated with PyGlet's window and event system.
 
----
-# Engine WIP
 ---
 
 ### Audio
@@ -58,7 +68,7 @@ Ludas uses PyGlet’s AVBin-based audio playback for 2D audio.
 Ludas is in PURE Python so you are forced to use python to code in the engine through VS Code.
 
 ---
-# Engine WIP
+# Engine WIP*
 ---
 ## Roadmap
 [ ]The engine
