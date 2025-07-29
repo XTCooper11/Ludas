@@ -15,7 +15,7 @@ Table of Contents:
   ### - [Physics](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#physics)
   ### - [Scripting](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#scripting)
 2. ## [Roadmap](https://github.com/XTCooper11/Ludas/blob/main/README.md#roadmap-1)
-3. ## [License]()
+3. ## [License](https://github.com/XTCooper11/Ludas/blob/main/README.md#license-1)
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
 
 ---
