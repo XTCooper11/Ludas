@@ -11,27 +11,27 @@ The name comes from a *Latin* phrase meaning "you play", because at the heart of
 
 ### Graphics
 #### 2D:
-#####Ludas uses PyGlet to connect to OpenGL for graphics rendering.
+ Ludas uses PyGlet to connect to OpenGL for graphics rendering.
 
 #### (WIP) 3D:
-#####Ludas uses modernGL on top of PyGlet for 3D rendering.
+ Ludas uses modernGL on top of PyGlet for 3D rendering.
 
 ---
 
 ### Audio
 
 #### 2D:
-#####Ludas uses the built in PyGlet audio system.
+ Ludas uses the built in PyGlet audio system.
 
 #### (WIP) 3D:
-#####Ludas uses OpenAL for 3D Audio.
+ Ludas uses OpenAL for 3D Audio.
 
 ---
 
 ### Physics
 
 #### 2D:
-#####Ludas uses PyBox2D for physics:
+ Ludas uses PyBox2D for physics:
 1. Rigid Body Dynamics & Collision Detection
 2. Joints and Constraints (various types)
 3. Sensors & Triggers
@@ -39,7 +39,7 @@ The name comes from a *Latin* phrase meaning "you play", because at the heart of
 5. Physics Material Properties (friction, restitution, density)
 
 #### (WIP) 3D:
-##### Ludas uses Pybullet for 3D physics:
+  Ludas uses Pybullet for 3D physics:
 1. Rigid Body Dynamics & Collision Detection
 2. Soft Body Simulation & Constraints
 3. Vehicles and Character Controllers
