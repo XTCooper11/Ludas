@@ -9,7 +9,7 @@ This engine is a hobby project built to be a feature-rich fully Python-based gam
 The name comes from a *Latin* phrase meaning "you play", because at the heart of every game is the player.
 
 Table of Contents:
-1. ## [Features](https://github.com/XTCooper11/Ludas/blob/main/README.md#features-1)
+1. ## [Features](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#features-1)
   ### - [Graphics](https://github.com/XTCooper11/Ludas/blob/main/README.md#graphics)
   ### - [Audio](https://github.com/XTCooper11/Ludas/blob/main/README.md#audio)
   ### - [Physics]()
