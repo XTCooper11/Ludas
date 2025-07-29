@@ -19,7 +19,8 @@ Table of Contents:
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
 
 ## Features
-
+# Engine WIP
+---
 ### Graphics
 #### 2D:
  Ludas uses PyGlet to connect to OpenGL for graphics rendering.
@@ -27,8 +28,6 @@ Table of Contents:
 #### (WIP) 3D:
  Ludas uses ModernGL for low-level shader-driven 3D rendering, integrated with PyGlet's window and event system.
 
----
-# Engine WIP
 ---
 
 ### Audio
