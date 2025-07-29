@@ -14,14 +14,14 @@ The name comes from a *Latin* phrase meaning "you play", because at the heart of
  Ludas uses PyGlet to connect to OpenGL for graphics rendering.
 
 #### (WIP) 3D:
- Ludas uses modernGL on top of PyGlet for 3D rendering.
+ Ludas uses ModernGL for low-level shader-driven 3D rendering, integrated with PyGlet's window and event system.
 
 ---
 
 ### Audio
 
 #### 2D:
- Ludas uses the built in PyGlet audio system.
+Ludas uses PyGlet’s AVBin-based audio playback for 2D audio.
 
 #### (WIP) 3D:
  Ludas uses OpenAL for 3D Audio.
