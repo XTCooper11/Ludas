@@ -18,11 +18,12 @@ Table of Contents:
 3. ## [License]()
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
 
-# Features
-
 ---
 # Engine WIP
 ---
+
+## Features
+
 ### Graphics
 #### 2D:
  Ludas uses PyGlet to connect to OpenGL for graphics rendering.
