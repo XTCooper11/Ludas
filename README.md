@@ -10,10 +10,10 @@ The name comes from a *Latin* phrase meaning "you play", because at the heart of
 
 Table of Contents:
 1. [Features]()
-  1. [Graphics]()
-  2. [Audio]()
-  3. [Physics]()
-  4. [Scripting]()
+  - [Graphics]()
+  - [Audio]()
+  - [Physics]()
+  - [Scripting]()
 2. [Roadmap]()
 3. [License]()
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
