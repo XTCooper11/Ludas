@@ -1,6 +1,8 @@
 # Ludas
 # Engine WIP
+
 ![Logo with replaced A](https://github.com/XTCooper11/Ludas/blob/main/images/Ludas-replacedA.png)
+
 ## About
 This engine is a hobby project built to be a feature-rich fully Python-based game engine. Unlike the current community leader, Pygame which lacks built in UI. This engine includes everything from rendering, audio, and camera management to both engine and in game UI, scripting, and more.
 
