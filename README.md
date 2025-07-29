@@ -13,7 +13,7 @@ Table of Contents:
   ### - [Graphics](https://github.com/XTCooper11/Ludas/blob/main/README.md#graphics)
   ### - [Audio](https://github.com/XTCooper11/Ludas/blob/main/README.md#audio)
   ### - [Physics](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#physics)
-  ### - [Scripting]()
+  ### - [Scripting](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#scripting)
 2. ## [Roadmap]()
 3. ## [License]()
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
