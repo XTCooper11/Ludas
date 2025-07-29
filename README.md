@@ -30,7 +30,7 @@ Ludas is fully focused on 3D. There is no 2D API. Everything is built around 3D 
 * ✅ GLSL shader support
 * ✅ 3D mesh loading (.obj)
 * ✅ Perspective camera system
-* 🚧 Lighting (basic and advanced)
+* 🚧 Lighting (basic and advanced) (planned)
 * 🚧 Scene management (planned)
 
 ### Audio
@@ -57,7 +57,7 @@ Ludas is fully focused on 3D. There is no 2D API. Everything is built around 3D 
 * [ ] Scene manager and entity system
 * [ ] Lighting + shadows
 * [ ] Animation system
-* [ ] GUI overlay (optional)
+* [ ] complex UI system
 * [ ] PyPI package
 * [ ] Visual editor (long-term goal)
 
