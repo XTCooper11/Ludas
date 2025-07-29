@@ -1,5 +1,5 @@
 # Ludas
-# Engine WIP
+# Engine WIP*
 
 ![Logo with replaced A](https://github.com/XTCooper11/Ludas/blob/main/images/Ludas-replacedA.png)
 
@@ -19,7 +19,7 @@ Table of Contents:
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
 
 ---
-# Engine WIP
+# Engine WIP*
 ---
 
 ## Features
@@ -68,7 +68,7 @@ Ludas uses PyGlet’s AVBin-based audio playback for 2D audio.
 Ludas is in PURE Python so you are forced to use python to code in the engine through VS Code.
 
 ---
-# Engine WIP
+# Engine WIP*
 ---
 ## Roadmap
 [ ]The engine
