@@ -1,80 +1,72 @@
 # Ludas
-# Engine WIP*
 
 ![Logo with replaced A](https://github.com/XTCooper11/Ludas/blob/main/images/Ludas-replacedA.png)
 
 ## About
-This engine is a hobby project built to be a feature-rich fully Python-based game engine. Unlike the current community leader, Pygame which lacks built in UI. This engine includes everything from rendering, audio, and camera management to both engine and in game UI, scripting, and more.
 
-The name comes from a *Latin* phrase meaning "you play", because at the heart of every game is the player.
+Ludas is a plug-and-play **3D game development library** written in pure Python. It focuses solely on 3D, making tasks like rendering, camera movement, and mesh handling easy to implement without needing a full game engine. Built on top of `ModernGL`, `Pyglet`, and `NumPy`, Ludas gives you direct access to the 3D pipeline with simple and clean Python syntax.
 
-Table of Contents:
-1. ## [Features](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#features-1)
-  ### - [Graphics](https://github.com/XTCooper11/Ludas/blob/main/README.md#graphics)
-  ### - [Audio](https://github.com/XTCooper11/Ludas/blob/main/README.md#audio)
-  ### - [Physics](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#physics)
-  ### - [Scripting](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#scripting)
-2. ## [Roadmap](https://github.com/XTCooper11/Ludas/blob/main/README.md#roadmap-1)
-3. ## [License](https://github.com/XTCooper11/Ludas/blob/main/README.md#license-1)
-![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
+The name comes from a *Latin* word meaning "you play" — because all games begin with the player.
 
 ---
-# Engine WIP*
+
+## Table of Contents:
+
+1. [Features](#features)
+2. [Roadmap](#roadmap)
+3. [License](#license)
+
+![Logo separated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
+
 ---
 
 ## Features
 
-### Graphics
-#### 2D:
- Ludas uses PyGlet to connect to OpenGL for graphics rendering.
+### Graphics (3D Only)
 
-#### (WIP) 3D:
- Ludas uses ModernGL for low-level shader-driven 3D rendering, integrated with PyGlet's window and event system.
+Ludas is fully focused on 3D. There is no 2D API. Everything is built around 3D rendering using OpenGL:
 
----
+* ✅ Easy window creation
+* ✅ GLSL shader support
+* ✅ 3D mesh loading (.obj)
+* ✅ Perspective camera system
+* 🚧 Lighting (basic and advanced)
+* 🚧 Scene management (planned)
 
 ### Audio
 
-#### 2D:
-Ludas uses PyGlet’s AVBin-based audio playback for 2D audio.
-
-#### (WIP) 3D:
- Ludas uses OpenAL for 3D Audio.
-
----
+* ✅ Basic audio via `Pyglet` for background music and sound effects
+* 🚧 3D positional audio support (planned)
 
 ### Physics
 
-#### 2D:
- Ludas uses PyBox2D for physics:
-1. Rigid Body Dynamics & Collision Detection
-2. Joints and Constraints (various types)
-3. Sensors & Triggers
-4. Continuous Collision Detection (CCD)
-5. Physics Material Properties (friction, restitution, density)
+* 🚧 Planned support for 3D physics using `PyBullet`, including:
 
-#### (WIP) 3D:
-  Ludas uses Pybullet for 3D physics:
-1. Rigid Body Dynamics & Collision Detection
-2. Soft Body Simulation & Constraints
-3. Vehicles and Character Controllers
-4. Collision Filtering & Continuous Collision Detection (CCD)
-5. Physics Material Properties (friction, restitution, mass)
-
----
+  * Rigid body simulation
+  * Basic collision detection
 
 ### Scripting
-#### 2D and (WIP) 3D:
-Ludas is in PURE Python so you are forced to use python to code in the engine through VS Code.
+
+* ✅ Write your games entirely in Python
+* ✅ No external editor required — bring your own IDE
 
 ---
-# Engine WIP*
----
+
 ## Roadmap
-[ ]The engine
+
+* [ ] Scene manager and entity system
+* [ ] Lighting + shadows
+* [ ] Animation system
+* [ ] GUI overlay (optional)
+* [ ] PyPI package
+* [ ] Visual editor (long-term goal)
 
 ---
+
 ![1:1 Logo](https://github.com/XTCooper11/Ludas/blob/main/images/1%3A1%20Logo.png)
 
 ## License
-### [MIT license](https://github.com/XTCooper11/Ludas/blob/main/LICENSE)
+
+Ludas is open-source under the [MIT license](https://github.com/XTCooper11/Ludas/blob/main/LICENSE).
+
+Use it, modify it, and make great 3D games.
