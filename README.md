@@ -46,4 +46,4 @@ Ludas uses PyGlet’s AVBin-based audio playback for 2D audio.
 4. Collision Filtering & Continuous Collision Detection (CCD)
 5. Physics Material Properties (friction, restitution, mass)
 
-------
+---
