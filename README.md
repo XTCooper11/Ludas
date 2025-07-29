@@ -58,6 +58,7 @@ Ludas is in PURE Python so you are forced to use python to code in the engine th
 []The engine
 
 ---
+![1:1 Logo]()
 
 ## License
 ### MIT license
