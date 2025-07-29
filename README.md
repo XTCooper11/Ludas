@@ -12,7 +12,7 @@ Table of Contents:
 1. ## [Features](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#features-1)
   ### - [Graphics](https://github.com/XTCooper11/Ludas/blob/main/README.md#graphics)
   ### - [Audio](https://github.com/XTCooper11/Ludas/blob/main/README.md#audio)
-  ### - [Physics]()
+  ### - [Physics](https://github.com/XTCooper11/Ludas/tree/main?tab=readme-ov-file#physics)
   ### - [Scripting]()
 2. ## [Roadmap]()
 3. ## [License]()
