@@ -19,6 +19,8 @@ Table of Contents:
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
 
 ## Features
+
+---
 # Engine WIP
 ---
 ### Graphics
