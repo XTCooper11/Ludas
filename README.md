@@ -18,7 +18,7 @@ Table of Contents:
 3. ## [License]()
 ![Logo seperated](https://github.com/XTCooper11/Ludas/blob/main/images/logo%20and%20text%20seperated.png)
 
-## Features
+# Features
 
 ---
 # Engine WIP
