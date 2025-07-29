@@ -48,7 +48,7 @@ Ludas is fully focused on 3D. There is no 2D API. Everything is built around 3D 
 ### Scripting
 
 * ✅ Write your games entirely in Python
-* ✅ No external editor required — bring your own IDE
+* ✅ No external editor required — BYOIDE (bring your own IDE)
 
 ---
 
