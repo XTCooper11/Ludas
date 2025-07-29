@@ -51,3 +51,7 @@ Ludas uses PyGlet’s AVBin-based audio playback for 2D audio.
 ### Scripting
 #### 2D and (WIP) 3D:
 Ludas is in PURE Python so you are forced to use python to code in VS Code.
+
+---
+
+
