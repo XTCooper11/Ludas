@@ -63,7 +63,7 @@ Ludas is fully focused on 3D. There is no 2D API. Everything is built around 3D 
 
 ---
 
-![1:1 Logo](https://github.com/XTCooper11/Ludas/blob/main/images/1%3A1%20Logo.png)
+<img src="https://github.com/XTCooper11/Ludas/blob/main/images/1x1%20Logo.png" width="200" alt="1x1 Ludas Lightbulb logo">
 
 ## License
 
