@@ -71,6 +71,7 @@ It’s trying to teach you *why those engines exist*.
 - More GPU Control
 - Animation Support
 - UI Tools
+- Simple ECS
 
 Nothing here is promised. Everything here is earned.
 
