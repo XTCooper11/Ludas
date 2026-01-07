@@ -59,21 +59,8 @@ It’s trying to teach you *why those engines exist*.
 ### Timing & Physics (Basic)
 - High-resolution delta time using SDL performance counters
 - Basic velocity-based movement
-- Gravity and friction simulation
+- Gravity simulation
 - Simple force application
-
----
-
-## What Ludas Is *Not* (Yet)
-
-- No scene system
-- No ECS
-- No asset pipeline
-- No editor
-- No scripting language
-- No serious physics engine
-
-All of that is **deliberately deferred**.
 
 ---
 
@@ -118,7 +105,7 @@ Contributions are welcome, but expectations are clear.
 - Add heavy dependencies
 - Turn this into a “framework of frameworks”
 
-If you’re unsure, open an issue or discussion first or DM me on Discord "XT Cooper"
+If you’re unsure, open an issue or discussion first or DM me on Discord "XT Cooper" for large contributions
 
 ---
 
@@ -132,15 +119,10 @@ SDL3 and SDL3-image are REQUIRED.
 
 ## License
 
-MIT.
-Use it, break it, learn from it.
+BSD-3-Cluase
 
 ---
 
 ## Final Note
 
-Ludas exists to answer one question:
-
-> *“What does a game engine actually do?”*
-
-If it helps answer that—even imperfectly—it’s doing its job.
+Ludas exists to hold your hand and allow you to fly alone, your choice.
