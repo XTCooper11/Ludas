@@ -1,5 +1,8 @@
 #pragma once
-
+/*  ANYONE CHECKING THE SOURCE FOR INFO
+	SEE THE DOCS ON GITHUB IN THE WIKI SECTION
+	USE THE LINK: https://github.com/XTCooper11/Ludas/wiki
+*/
 #define SDL_MAIN_HANDLED
 #include "SDL3/SDL.h"
 #include "SDL3_image/SDL_image.h"
@@ -18,10 +21,23 @@ extern SDL_Renderer* renderer;
 //created once when LUDAS_INSTANCE is defined.
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
+#endif
 void LudasOUT(std::string message) {
 	std::cout << message << std::endl;
 }
-#endif
+float GetDeltaTime() {
+	static Uint64 lastTime = SDL_GetPerformanceCounter();
+	Uint64 currentTime = SDL_GetPerformanceCounter();
+
+	// Calculate seconds passed since last call
+	float deltaTime = (float)(currentTime - lastTime) / (float)SDL_GetPerformanceFrequency();
+	lastTime = currentTime;
+
+	//cap deltaTime
+	if (deltaTime > 0.1f) deltaTime = 0.1f;
+
+	return deltaTime;
+}
 class Object {
 public:
 	//positions and stuff
@@ -39,12 +55,10 @@ public:
 	// State
 	bool isActive = true;
 	bool affectPhysics = false;
-	bool isSurface = false;
 	//Physics
-	float xvel = 0.0f;     // Velocity
-	float yvel = 0.0f;
+	float xvel = 0;     // Velocity
+	float yvel = 0;
 	float gravity = -9.8f;  // Downward force
-	float friction = 0.95f; // Resistance
 
 	std::string GetCurrentState() {
 		std::stringstream ss;
@@ -69,7 +83,7 @@ public:
 
 		ss << "[ PHYSICS ]\n";
 		ss << "Vel: " << xvel << "x, " << yvel << "y\n";
-		ss << "Fric: " << friction << "\n\n" << " | Grav: " << gravity << "\n";
+		ss << "Grav: " << gravity << "\n";
 
 		return ss.str();
 	}
@@ -88,21 +102,17 @@ public:
 		}
 	}
 	void UpdateState(float deltaTime) {
-		if (!isActive && !affectPhysics && isSurface) return;
+		if (!isActive && !affectPhysics) return;
 
 		//Apply Gravity
 		yvel += gravity * deltaTime;
-
-		//Friction
-		xvel *= friction;
-		yvel *= friction;
 
 		//Apply Movement
 		xcord += xvel * deltaTime;
 		ycord += yvel * deltaTime;
 	}
 	void PushObject(float xforce, float yforce) {
-		if (!isActive || isSurface) return;
+		if (!isActive) return;
 
 		// We add the force directly to the velocity
 		xvel += xforce;
@@ -118,16 +128,7 @@ public:
 		SDL_RenderTextureRotated(renderer, texture, NULL, &dest, angle, NULL, flip);
 	}
 	void FullUpdate(SDL_Renderer* renderer) {
-		//Calculate deltaTime internally
-		static Uint64 lastTime = SDL_GetPerformanceCounter();
-		Uint64 currentTime = SDL_GetPerformanceCounter();
-
-		//Calculate seconds passed since last call
-		float deltaTime = (float)(currentTime - lastTime) / (float)SDL_GetPerformanceFrequency();
-		lastTime = currentTime;
-
-		// To prevent "teleporting" if the game freezes for a second, cap deltaTime
-		if (deltaTime > 0.1f) deltaTime = 0.1f;
+		float deltaTime = GetDeltaTime();
 
 		//Physics
 		UpdateState(deltaTime);
@@ -157,7 +158,7 @@ bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* API
 
 	// Only create window/renderer if Video was requested
 	if (flags & VIDEO) {
-		SDL_Window* window = SDL_CreateWindow(title, w, h, 0);
+		window = SDL_CreateWindow(title, w, h, 0);
 		if (!window) {
 			LudasOUT(SDL_GetError());
 			SDL_Quit();
@@ -165,33 +166,20 @@ bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* API
 		}
 
 		if (APIChoice == "auto") APIChoice = NULL;
-		SDL_Renderer* renderer = SDL_CreateRenderer(window, APIChoice);
+		renderer = SDL_CreateRenderer(window, APIChoice); // No SDL_Renderer* here
 		if (!renderer) {
 			LudasOUT(SDL_GetError());
 			SDL_DestroyWindow(window);
 			SDL_Quit();
 			return false;
 		}
+	
 		LudasOUT(SDL_GetRendererName(renderer));
 		LudasOUT("Renderer and Window Created!");
 
 	}
 
 	return true;
-}
-
-float GetDeltaTime() {
-    static Uint64 lastTime = SDL_GetPerformanceCounter();
-    Uint64 currentTime = SDL_GetPerformanceCounter();
-
-    // Calculate seconds passed since last call
-    float deltaTime = (float)(currentTime - lastTime) / (float)SDL_GetPerformanceFrequency();
-    lastTime = currentTime;
-
-    //cap deltaTime
-    if (deltaTime > 0.1f) deltaTime = 0.1f;
-
-    return deltaTime;
 }
 bool HasQuit(SDL_Event &event) {
 	if (event.type == SDL_EVENT_QUIT) {
