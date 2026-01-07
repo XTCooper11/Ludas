@@ -73,7 +73,7 @@ It’s trying to teach you *why those engines exist*.
 - UI Tools
 - Simple ECS
 
-Nothing here is promised. Everything here is earned.
+Nothing here is promised.
 
 ---
 
