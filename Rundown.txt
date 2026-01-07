@@ -1,0 +1,9 @@
+Object Class -
+Vars: x, y, w, h, scale, angle, texture, color (RGBA), Flip_Mode, isActive, affectPhysics, isSurface, xvel, yvel, gravity, friction
+
+Funcs: GetCurrentState(), SetTexturePNG(), UpdateState(), PushObject(), Render(), FullUpdate(), StartLudas()
+
+Global -
+Vars: window, renderer
+
+Funcs: GetDeltaTime(), CloseALL()

@@ -1,0 +1,208 @@
+#pragma once
+
+#define SDL_MAIN_HANDLED
+#include "SDL3/SDL.h"
+#include "SDL3_image/SDL_image.h"
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <iostream>
+#ifndef LUDAS_H
+#define LUDAS_H
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
+
+#endif 
+#ifdef LUDAS_INSTANCE
+
+//created once when LUDAS_INSTANCE is defined.
+SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
+void LudasOUT(std::string message) {
+	std::cout << message << std::endl;
+}
+#endif
+class Object {
+public:
+	//positions and stuff
+	float xcord = 0;
+	float ycord = 0;
+	float w = 50;
+	float h = 50;
+	float scale = 1;
+	float angle = 0;
+	// how it will look
+	SDL_Texture* texture = NULL;
+	int color[4] = { 255,255,255,255 };
+	SDL_FlipMode flip = SDL_FLIP_NONE;
+
+	// State
+	bool isActive = true;
+	bool affectPhysics = false;
+	bool isSurface = false;
+	//Physics
+	float xvel = 0.0f;     // Velocity
+	float yvel = 0.0f;
+	float gravity = -9.8f;  // Downward force
+	float friction = 0.95f; // Resistance
+
+	std::string GetCurrentState() {
+		std::stringstream ss;
+
+		// Set float precision to 2 decimal places for cleaner reading
+		ss << std::fixed << std::setprecision(2);
+
+		ss << "[ Debug Info ]\n\n";
+
+		ss << "[ TRANSFORM ]\n";
+		ss << "Pos: " << xcord << ", " << ycord << "\n";
+		ss << "Dim: " << w << " x " << h << " (Scale: " << scale << ")\n";
+		ss << "Rot: " << angle << " deg\n\n";
+
+		ss << "[ APPEARANCE ]\n";
+		ss << "Color: RGBA(" << color[0] << "," << color[1] << "," << color[2] << "," << color[3] << ")\n";
+		ss << "Flip: " << (int)flip << " | TexturePtr: " << texture << "\n\n";
+
+		ss << "[ STATUS ]\n";
+		ss << "Active: " << (isActive ? "YES" : "NO") << "\n";
+		ss << "Physics: " << (affectPhysics ? "ENABLED" : "DISABLED") << "\n\n";
+
+		ss << "[ PHYSICS ]\n";
+		ss << "Vel: " << xvel << "x, " << yvel << "y\n";
+		ss << "Fric: " << friction << "\n\n" << " | Grav: " << gravity << "\n";
+
+		return ss.str();
+	}
+	void SetTexturePNG(SDL_Renderer* renderer, const char* file) {
+		this->texture = IMG_LoadTexture(renderer, file);
+
+		if (this->texture != NULL) {
+			// Automatically update Object dimensions to match the PNG
+			float width, height;
+			SDL_GetTextureSize(this->texture, &width, &height);
+			this->w = width;
+			this->h = height;
+		}
+		else {
+			SDL_Log("Failed to load: %s", SDL_GetError());
+		}
+	}
+	void UpdateState(float deltaTime) {
+		if (!isActive && !affectPhysics && isSurface) return;
+
+		//Apply Gravity
+		yvel += gravity * deltaTime;
+
+		//Friction
+		xvel *= friction;
+		yvel *= friction;
+
+		//Apply Movement
+		xcord += xvel * deltaTime;
+		ycord += yvel * deltaTime;
+	}
+	void PushObject(float xforce, float yforce) {
+		if (!isActive || isSurface) return;
+
+		// We add the force directly to the velocity
+		xvel += xforce;
+		yvel += yforce;
+	}
+	void Render(SDL_Renderer* renderer) {
+		if (!isActive || !texture) return;
+
+		SDL_FRect dest = { xcord, ycord, w * scale, h * scale };
+		SDL_SetTextureColorMod(texture, color[0], color[1], color[2]);
+
+		// Rotate the object
+		SDL_RenderTextureRotated(renderer, texture, NULL, &dest, angle, NULL, flip);
+	}
+	void FullUpdate(SDL_Renderer* renderer) {
+		//Calculate deltaTime internally
+		static Uint64 lastTime = SDL_GetPerformanceCounter();
+		Uint64 currentTime = SDL_GetPerformanceCounter();
+
+		//Calculate seconds passed since last call
+		float deltaTime = (float)(currentTime - lastTime) / (float)SDL_GetPerformanceFrequency();
+		lastTime = currentTime;
+
+		// To prevent "teleporting" if the game freezes for a second, cap deltaTime
+		if (deltaTime > 0.1f) deltaTime = 0.1f;
+
+		//Physics
+		UpdateState(deltaTime);
+
+		//Rendering
+		Render(renderer);
+	}
+};
+enum LudasFlags {
+	VIDEO = 0x01,
+	AUDIO = 0x02,
+	INPUT = 0x04,
+	LUDAS_EVERYTHING = (VIDEO | AUDIO | INPUT)
+};
+bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* APIChoice) {
+	uint32_t sdlFlags = 0;
+
+	// Map your flags to SDL3 flags
+	if (flags & VIDEO) sdlFlags |= SDL_INIT_VIDEO;
+	if (flags & AUDIO) sdlFlags |= SDL_INIT_AUDIO;
+	if (flags & INPUT) sdlFlags |= SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK;
+
+	if (!SDL_Init(sdlFlags)) {
+		SDL_Log("SDL_Init Failed: %s", SDL_GetError());
+		return false;
+	}
+
+	// Only create window/renderer if Video was requested
+	if (flags & VIDEO) {
+		SDL_Window* window = SDL_CreateWindow(title, w, h, 0);
+		if (!window) {
+			LudasOUT(SDL_GetError());
+			SDL_Quit();
+			return false;
+		}
+
+		if (APIChoice == "auto") APIChoice = NULL;
+		SDL_Renderer* renderer = SDL_CreateRenderer(window, APIChoice);
+		if (!renderer) {
+			LudasOUT(SDL_GetError());
+			SDL_DestroyWindow(window);
+			SDL_Quit();
+			return false;
+		}
+		LudasOUT(SDL_GetRendererName(renderer));
+		LudasOUT("Renderer and Window Created!");
+
+	}
+
+	return true;
+}
+
+float GetDeltaTime() {
+    static Uint64 lastTime = SDL_GetPerformanceCounter();
+    Uint64 currentTime = SDL_GetPerformanceCounter();
+
+    // Calculate seconds passed since last call
+    float deltaTime = (float)(currentTime - lastTime) / (float)SDL_GetPerformanceFrequency();
+    lastTime = currentTime;
+
+    //cap deltaTime
+    if (deltaTime > 0.1f) deltaTime = 0.1f;
+
+    return deltaTime;
+}
+bool HasQuit(SDL_Event &event) {
+	if (event.type == SDL_EVENT_QUIT) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+void CloseALL(SDL_Renderer* renderer, SDL_Window* window) {
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
