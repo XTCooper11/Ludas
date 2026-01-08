@@ -130,7 +130,7 @@ Copyright (c) 2026, XTCooper11. All rights reserved.
 * **No Endorsement:** You cannot use the name "XTCooper11" to promote your game without prior written permission.
 * **No Liability:** The software is provided "as is" without any warranty.
 
-See the [LICENSE](./LICENSE) file for the full legal text.
+> See the [LICENSE](./LICENSE) file for the full legal text.
 ---
 
 ## Final Note
