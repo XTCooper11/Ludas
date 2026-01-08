@@ -211,3 +211,46 @@ float GetCenterOf(SDL_Window* window, const char* axis) {
 		return 0;
 	}
 }
+void TerminalFPS() {
+	static float accumulator = 0.0f;
+	static int frameCount = 0;
+
+	accumulator += GetDeltaTime();
+	frameCount++;
+
+	// Update every 0.5 seconds to keep the terminal readable
+	if (accumulator >= 0.5f) {
+		// Clear the screen first
+#if defined(SDL_PLATFORM_WINDOWS)
+		system("cls");
+#else
+		system("clear");
+#endif
+		float avgFPS = (float)frameCount / accumulator;
+		// Format the string
+		std::stringstream ss;
+		ss << " DEBUG MONITOR" << "\n" << " FPS: " << std::fixed << std::setprecision(2) << avgFPS << "\n";
+		LudasOUT(ss.str());
+
+		// Reset counters
+		accumulator = 0.0f;
+		frameCount = 0;
+	}
+}
+void CapTo240FPS() {
+	static Uint64 nextFrameTime = 0;
+	Uint64 now = SDL_GetTicksNS();
+
+	if (nextFrameTime == 0) nextFrameTime = now;
+
+	Uint64 frameBudget = 1000000000 / 240; // nanoseconds for 240 FPS
+	nextFrameTime += frameBudget;
+
+	if (nextFrameTime > now) {
+		SDL_DelayPrecise(nextFrameTime - now);
+	}
+	else {
+		// We are behind schedule, don't wait!
+		nextFrameTime = now;
+	}
+}
