@@ -44,7 +44,7 @@ It’s trying to teach you *why those engines exist*.
   - `metal` (macOS)
   - `vulkan`
   - `direct3d11` (Windows)
-  - 'software'
+  - `software`
 - Runtime query of the actual renderer selected by SDL
 - Texture loading via **SDL3_image**
 - Color modulation, rotation, scaling, and flipping
