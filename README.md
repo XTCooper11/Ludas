@@ -68,7 +68,7 @@ It’s trying to teach you *why those engines exist*.
 
 - Audio Support
 - More Robust Physics
-- More GPU Control
+- Simple Lighting Systems
 - Animation Support
 - UI Tools
 - Simple ECS
