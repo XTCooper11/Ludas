@@ -119,9 +119,18 @@ SDL3 and SDL3-image are REQUIRED.
 ---
 
 ## License
+This framework is licensed under the **BSD 3-Clause License**.
 
-BSD-3-Cluase
+Copyright (c) 2026, XTCooper11. All rights reserved.
 
+### Summary for Developers
+* **Commercial Use:** You can use this framework to build and sell your own games.
+* **Modifications:** You can change the framework code however you like.
+* **Attribution:** You must keep the copyright notice in your source code and include it in your game's credits/documentation.
+* **No Endorsement:** You cannot use the name "XTCooper11" to promote your game without prior written permission.
+* **No Liability:** The software is provided "as is" without any warranty.
+
+See the [LICENSE](./LICENSE) file for the full legal text.
 ---
 
 ## Final Note
