@@ -3,6 +3,7 @@
 	SEE THE DOCS ON GITHUB IN THE WIKI SECTION
 	USE THE LINK: https://github.com/XTCooper11/Ludas/wiki
 */
+// Dev to Do: Create CheckCollision, ResolveCollision, and SetCollisionBox functions
 #define SDL_MAIN_HANDLED
 #include "SDL3/SDL.h"
 #include "SDL3_image/SDL_image.h"
@@ -55,10 +56,12 @@ public:
 	// State
 	bool isActive = true;
 	bool affectPhysics = false;
+	bool hasCollider = false;
 	//Physics
 	float xvel = 0;     // Velocity
 	float yvel = 0;
 	float gravity = -9.8f;  // Downward force
+
 
 	std::string GetCurrentState() {
 		std::stringstream ss;
@@ -88,6 +91,8 @@ public:
 		return ss.str();
 	}
 	void SetTexturePNG(SDL_Renderer* renderer, const char* file) {
+		if (renderer == NULL or file == NULL) return;
+
 		this->texture = IMG_LoadTexture(renderer, file);
 
 		if (this->texture != NULL) {
@@ -138,6 +143,32 @@ public:
 
 		//Rendering
 		Render(renderer);
+	}
+	void HandleWASD(float speed) {
+		int numkeys;
+		const bool* keys = (const bool*)SDL_GetKeyboardState(&numkeys);
+
+		if (keys) {
+			if (keys[SDL_SCANCODE_W]) ycord -= speed;
+			if (keys[SDL_SCANCODE_S]) ycord += speed;
+			if (keys[SDL_SCANCODE_A]) xcord -= speed;
+			if (keys[SDL_SCANCODE_D]) xcord += speed;
+		}
+	}
+	void HandleArrows(float speed) {
+		int numkeys;
+		const bool* keys = (const bool*)SDL_GetKeyboardState(&numkeys);
+
+		if (keys) {
+			if (keys[SDL_SCANCODE_UP]) ycord -= speed;
+			if (keys[SDL_SCANCODE_DOWN]) ycord += speed;
+			if (keys[SDL_SCANCODE_LEFT]) xcord -= speed;
+			if (keys[SDL_SCANCODE_RIGHT]) xcord += speed;
+		}
+	}
+	void HandleALLInput(float speed) {
+		HandleWASD(speed);
+		HandleArrows(speed);
 	}
 };
 enum LudasFlags {
