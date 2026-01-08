@@ -123,7 +123,10 @@ public:
 
 		SDL_FRect dest = { xcord, ycord, w * scale, h * scale };
 		SDL_SetTextureColorMod(texture, color[0], color[1], color[2]);
-
+		dest.x = this->xcord - (this->w / 2.0f);
+		dest.y = this->ycord - (this->h / 2.0f);
+		dest.w = this->w;
+		dest.h = this->h;
 		// Rotate the object
 		SDL_RenderTextureRotated(renderer, texture, NULL, &dest, angle, NULL, flip);
 	}
@@ -155,7 +158,6 @@ bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* API
 		SDL_Log("SDL_Init Failed: %s", SDL_GetError());
 		return false;
 	}
-
 	// Only create window/renderer if Video was requested
 	if (flags & VIDEO) {
 		window = SDL_CreateWindow(title, w, h, 0);
@@ -193,4 +195,19 @@ void CloseALL(SDL_Renderer* renderer, SDL_Window* window) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+float GetCenterOf(SDL_Window* window, const char* axis) {
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+	// Using strcmp to compare the string content correctly
+	if (std::strcmp(axis, "x") == 0 || std::strcmp(axis, "X") == 0) {
+		return w / 2.0f;
+	}
+	else if (std::strcmp(axis, "y") == 0 || std::strcmp(axis, "Y") == 0) {
+		return h / 2.0f;
+	}
+	else {
+		return 0;
+	}
 }
