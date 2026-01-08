@@ -106,7 +106,7 @@ Contributions are welcome, but expectations are clear.
 - Add heavy dependencies
 - Turn this into a “framework of frameworks”
 
-If you’re unsure, open an issue or discussion first or DM me on Discord "XT Cooper" for large contributions
+If you’re unsure, open an issue or discussion first or DM me on Discord "XT Cooper" for large contributions.
 
 ---
 
@@ -114,7 +114,7 @@ If you’re unsure, open an issue or discussion first or DM me on Discord "XT Co
 
 **Right now**, Ludas is distributed as a **single-header implementation**. (Things will change as the project goes on)
 You include it, define the implementation once, and go.
-SDL3 and SDL3-image are REQUIRED.
+SDL3 and SDL3-image are REQUIRED. They are included with official releases, SDL3 developed by Sam Lantinga and Ryan C. Gordon (SDL Website)[https://www.libsdl.org/]
 
 ---
 
