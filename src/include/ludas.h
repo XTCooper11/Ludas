@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <cmath>
 #ifndef LUDAS_H
 #define LUDAS_H
 extern SDL_Window* window;
@@ -63,10 +64,11 @@ public:
 	bool isActive = true;
 	bool affectPhysics = false;
 	bool hasCollider = false;
+	bool isStatic = false;
 	//Physics
 	float xvel = 0;     // Velocity
 	float yvel = 0;
-	float gravity = -9.8f;  // Downward force
+	float gravity = 98.f;  // Downward force
 	float collider[4];
 
 
@@ -292,7 +294,49 @@ void CapTo240FPS() {
 		nextFrameTime = now;
 	}
 }
-inline bool IsCollidingWith(const Object& a, const Object& b) {
+inline void UpdateCollider(Object& obj) {
+	// half sizes
+	float hw = obj.w * 0.5f;
+	float hh = obj.h * 0.5f;
+
+	// rectangle corners before rotation
+	float cornersX[4] = { obj.xcord - hw, obj.xcord + hw, obj.xcord + hw, obj.xcord - hw };
+	float cornersY[4] = { obj.ycord - hh, obj.ycord - hh, obj.ycord + hh, obj.ycord + hh };
+
+	// rotate each corner around the object's center
+	float rad = obj.angle * 3.14159265f / 180.0f;
+	float s = sin(rad);
+	float c = cos(rad);
+
+	for (int i = 0; i < 4; i++) {
+		// translate point to origin
+		float px = cornersX[i] - obj.xcord;
+		float py = cornersY[i] - obj.ycord;
+
+		// rotate
+		float xnew = px * c - py * s;
+		float ynew = px * s + py * c;
+
+		// translate back
+		cornersX[i] = xnew + obj.xcord;
+		cornersY[i] = ynew + obj.ycord;
+	}
+
+	// find min/max
+	obj.collider[MIN_X] = cornersX[0];
+	obj.collider[MAX_X] = cornersX[0];
+	obj.collider[MIN_Y] = cornersY[0];
+	obj.collider[MAX_Y] = cornersY[0];
+
+	for (int i = 1; i < 4; i++) {
+		if (cornersX[i] < obj.collider[MIN_X]) obj.collider[MIN_X] = cornersX[i];
+		if (cornersX[i] > obj.collider[MAX_X]) obj.collider[MAX_X] = cornersX[i];
+		if (cornersY[i] < obj.collider[MIN_Y]) obj.collider[MIN_Y] = cornersY[i];
+		if (cornersY[i] > obj.collider[MAX_Y]) obj.collider[MAX_Y] = cornersY[i];
+	}
+}
+
+inline bool IsCollidingWith(const Object& a, const Object& b) { // returns a bool if 2 objects are colliding so the user can use that info
 	if (a.hasCollider == false or b.hasCollider == false) return false;
 	return (
 		a.collider[MIN_X] < b.collider[MAX_X] &&
@@ -301,5 +345,62 @@ inline bool IsCollidingWith(const Object& a, const Object& b) {
 		a.collider[MAX_Y] > b.collider[MIN_Y]
 		);
 }
+inline void CheckFixColliding(Object& a, Object& b) {
+	// Update colliders first
+	UpdateCollider(a);
+	UpdateCollider(b);
 
+	if (!IsCollidingWith(a, b)) return;
 
+	float overlapX = 0.0f;
+	float overlapY = 0.0f;
+
+	if (a.xcord < b.xcord)
+		overlapX = a.collider[MAX_X] - b.collider[MIN_X];
+	else
+		overlapX = b.collider[MAX_X] - a.collider[MIN_X];
+
+	if (a.ycord < b.ycord)
+		overlapY = a.collider[MAX_Y] - b.collider[MIN_Y];
+	else
+		overlapY = b.collider[MAX_Y] - a.collider[MIN_Y];
+
+	// Move along the axis with the smallest overlap
+	if (overlapX < overlapY) {
+		float move = overlapX;
+		if (!a.isStatic && !b.isStatic) {
+			move *= 0.5f;
+			if (a.xcord < b.xcord) { a.xcord -= move; b.xcord += move; }
+			else { a.xcord += move; b.xcord -= move; }
+		}
+		else if (!a.isStatic) {
+			if (a.xcord < b.xcord) a.xcord -= move;
+			else                    a.xcord += move;
+		}
+		else if (!b.isStatic) {
+			if (a.xcord < b.xcord) b.xcord += move;
+			else                    b.xcord -= move;
+		}
+		// if both static, do nothing
+	}
+	else {
+		float move = overlapY;
+		if (!a.isStatic && !b.isStatic) {
+			move *= 0.5f;
+			if (a.ycord < b.ycord) { a.ycord -= move; b.ycord += move; }
+			else { a.ycord += move; b.ycord -= move; }
+		}
+		else if (!a.isStatic) {
+			if (a.ycord < b.ycord) a.ycord -= move;
+			else                    a.ycord += move;
+		}
+		else if (!b.isStatic) {
+			if (a.ycord < b.ycord) b.ycord += move;
+			else                    b.ycord -= move;
+		}
+	}
+
+	// Update colliders again, just in case
+	UpdateCollider(a);
+	UpdateCollider(b);
+}
