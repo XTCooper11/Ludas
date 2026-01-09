@@ -99,20 +99,31 @@ public:
 
 		return ss.str();
 	}
-	void SetTexturePNG(SDL_Renderer* renderer, const char* file) {
-		if (renderer == NULL or file == NULL) return;
+	void SetTexture(SDL_Renderer* renderer, const char* file) { // AVIF,BMP,GIF,ICO,JPG,JXL,LBM,PCX,PNG,PNM,QOI,SVG,TGA,TIFF,WEBP,XCF,XPM,XV
+		if (renderer == NULL || file == NULL) {
+			SDL_Log("SetTexture failed: Renderer or File path is NULL");
+			return;
+		}
 
+		// Clean up
+		if (this->texture != NULL) {
+			SDL_DestroyTexture(this->texture);
+			this->texture = NULL;
+		}
+
+		//Load the new texture Format is detected automatically
 		this->texture = IMG_LoadTexture(renderer, file);
 
+		// Update dimensions if successful
 		if (this->texture != NULL) {
-			// Automatically update Object dimensions to match the PNG
 			float width, height;
-			SDL_GetTextureSize(this->texture, &width, &height);
-			this->w = width;
-			this->h = height;
+			if (SDL_GetTextureSize(this->texture, &width, &height)) {
+				this->w = width;
+				this->h = height;
+			}
 		}
 		else {
-			SDL_Log("Failed to load: %s", SDL_GetError());
+			SDL_Log("Failed to load texture from %s: %s", file, SDL_GetError());
 		}
 	}
 	void UpdateState(float deltaTime) {
