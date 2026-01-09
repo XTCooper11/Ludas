@@ -11,7 +11,7 @@ Ludas intentionally favors **clarity over abstraction**. If something happens, y
 
 ⚠️ **Early Development**
 
-Ludas is *stable* enough to provide complete projects. Many feautures are yet to come that will increase its power.
+Ludas is *stable* enough to provide complete projects. Many feautures are yet to come that will allow for more complex games.
 
 ---
 
