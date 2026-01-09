@@ -39,6 +39,12 @@ float GetDeltaTime() {
 
 	return deltaTime;
 }
+enum ColliderBarrier : uint8_t {
+	MIN_X = 0,
+	MAX_X = 1,
+	MIN_Y = 2,
+	MAX_Y = 3
+};
 class Object {
 public:
 	//positions and stuff
@@ -61,6 +67,7 @@ public:
 	float xvel = 0;     // Velocity
 	float yvel = 0;
 	float gravity = -9.8f;  // Downward force
+	float collider[4];
 
 
 	std::string GetCurrentState() {
@@ -285,3 +292,14 @@ void CapTo240FPS() {
 		nextFrameTime = now;
 	}
 }
+inline bool IsCollidingWith(const Object& a, const Object& b) {
+	if (a.hasCollider == false or b.hasCollider == false) return false;
+	return (
+		a.collider[MIN_X] < b.collider[MAX_X] &&
+		a.collider[MAX_X] > b.collider[MIN_X] &&
+		a.collider[MIN_Y] < b.collider[MAX_Y] &&
+		a.collider[MAX_Y] > b.collider[MIN_Y]
+		);
+}
+
+
