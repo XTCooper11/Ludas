@@ -74,7 +74,7 @@ It’s trying to teach you *why those engines exist*.
 - UI Tools
 - Simple ECS
 
-Nothing here is promised.
+Check the latest release for the "goals" of the next release.
 
 ---
 
