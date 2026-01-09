@@ -22,7 +22,7 @@ Ludas is *stable* enough to provide complete projects. Many feautures are yet to
 - Avoid overengineering and premature abstractions
 - Provide a clear path from:
   - SDL-based rendering → native graphics APIs (OpenGL / Vulkan / Metal)
-- Stay **C++-first**, with minimal dependencies
+- Stay **C++ first**, with minimal dependencies
 
 This is not trying to compete with Unity, Unreal, or Godot.  
 It’s trying to teach you *why those engines exist*.
