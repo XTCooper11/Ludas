@@ -344,6 +344,40 @@ void CapTo240FPS() {
 		nextFrameTime = now;
 	}
 }
+void CapTo120FPS() {
+	static Uint64 nextFrameTime = 0;
+	Uint64 now = SDL_GetTicksNS();
+
+	if (nextFrameTime == 0) nextFrameTime = now;
+
+	Uint64 frameBudget = 1000000000 / 120; // nanoseconds for 120 FPS
+	nextFrameTime += frameBudget;
+
+	if (nextFrameTime > now) {
+		SDL_DelayPrecise(nextFrameTime - now);
+	}
+	else {
+		// We are behind schedule, don't wait!
+		nextFrameTime = now;
+	}
+}
+void CapTo60FPS() {
+	static Uint64 nextFrameTime = 0;
+	Uint64 now = SDL_GetTicksNS();
+
+	if (nextFrameTime == 0) nextFrameTime = now;
+
+	Uint64 frameBudget = 1000000000 / 60; // nanoseconds for 60 FPS
+	nextFrameTime += frameBudget;
+
+	if (nextFrameTime > now) {
+		SDL_DelayPrecise(nextFrameTime - now);
+	}
+	else {
+		// We are behind schedule, don't wait!
+		nextFrameTime = now;
+	}
+}
 inline void UpdateCollider(Object& obj) {
 	// half sizes
 	float hw = obj.w * 0.5f;
