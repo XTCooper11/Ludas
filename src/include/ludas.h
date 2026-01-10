@@ -506,8 +506,6 @@ void CameraFollowObject(Camera& cam, const Object& obj) {
 }
 inline void CameraFollowSmooth(Camera& cam, const Object& target) {
 	float dt = GetDeltaTime();
-
 	cam.x += (target.xcord - cam.x) * cam.smooth * dt;
 	cam.y += (target.ycord - cam.y) * cam.smooth * dt;
 }
-
