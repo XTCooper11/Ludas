@@ -14,6 +14,14 @@
 #include <cmath>
 #ifndef LUDAS_H
 #define LUDAS_H
+struct Camera {
+	float x = 0.0f;
+	float y = 0.0f;
+	float zoom = 1.0f;     // 1.0 = normal, >1 zoom in, <1 zoom out
+	float smooth = 8.0f;
+};
+
+extern Camera mainCamera;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 
@@ -23,6 +31,7 @@ extern SDL_Renderer* renderer;
 //created once when LUDAS_INSTANCE is defined.
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
+Camera mainCamera;
 #endif
 void LudasOUT(std::string message) {
 	std::cout << message << std::endl;
@@ -99,20 +108,31 @@ public:
 
 		return ss.str();
 	}
-	void SetTexturePNG(SDL_Renderer* renderer, const char* file) {
-		if (renderer == NULL or file == NULL) return;
+	void SetTexture(SDL_Renderer* renderer, const char* file) { // AVIF,BMP,GIF,ICO,JPG,JXL,LBM,PCX,PNG,PNM,QOI,SVG,TGA,TIFF,WEBP,XCF,XPM,XV
+		if (renderer == NULL || file == NULL) {
+			SDL_Log("SetTexture failed: Renderer or File path is NULL");
+			return;
+		}
 
+		// Clean up
+		if (this->texture != NULL) {
+			SDL_DestroyTexture(this->texture);
+			this->texture = NULL;
+		}
+
+		//Load the new texture Format is detected automatically
 		this->texture = IMG_LoadTexture(renderer, file);
 
+		// Update dimensions if successful
 		if (this->texture != NULL) {
-			// Automatically update Object dimensions to match the PNG
 			float width, height;
-			SDL_GetTextureSize(this->texture, &width, &height);
-			this->w = width;
-			this->h = height;
+			if (SDL_GetTextureSize(this->texture, &width, &height)) {
+				this->w = width;
+				this->h = height;
+			}
 		}
 		else {
-			SDL_Log("Failed to load: %s", SDL_GetError());
+			SDL_Log("Failed to load texture from %s: %s", file, SDL_GetError());
 		}
 	}
 	void UpdateState(float deltaTime) {
@@ -132,18 +152,27 @@ public:
 		xvel += xforce;
 		yvel += yforce;
 	}
-	void Render(SDL_Renderer* renderer) {
+	void Render(SDL_Renderer* renderer, const Camera& cam) {
 		if (!isActive || !texture) return;
 
-		SDL_FRect dest = { xcord, ycord, w * scale, h * scale };
+		int winW, winH;
+		SDL_GetWindowSize(window, &winW, &winH);
+
+		float halfW = winW * 0.5f;
+		float halfH = winH * 0.5f;
+
+		SDL_FRect dest;
+		dest.w = w * scale * cam.zoom;
+		dest.h = h * scale * cam.zoom;
+
+		dest.x = ((xcord - cam.x) * cam.zoom) + halfW - dest.w * 0.5f;
+		dest.y = ((ycord - cam.y) * cam.zoom) + halfH - dest.h * 0.5f;
+
 		SDL_SetTextureColorMod(texture, color[0], color[1], color[2]);
-		dest.x = this->xcord - (this->w / 2.0f);
-		dest.y = this->ycord - (this->h / 2.0f);
-		dest.w = this->w;
-		dest.h = this->h;
-		// Rotate the object
 		SDL_RenderTextureRotated(renderer, texture, NULL, &dest, angle, NULL, flip);
 	}
+
+
 	void FullUpdate(SDL_Renderer* renderer) {
 		float deltaTime = GetDeltaTime();
 
@@ -151,28 +180,48 @@ public:
 		UpdateState(deltaTime);
 
 		//Rendering
-		Render(renderer);
+		Render(renderer, mainCamera);
 	}
 	void HandleWASD(float speed) {
-		int numkeys;
-		const bool* keys = (const bool*)SDL_GetKeyboardState(&numkeys);
+		const bool* keys = SDL_GetKeyboardState(NULL);
 
 		if (keys) {
-			if (keys[SDL_SCANCODE_W]) ycord -= speed;
-			if (keys[SDL_SCANCODE_S]) ycord += speed;
-			if (keys[SDL_SCANCODE_A]) xcord -= speed;
-			if (keys[SDL_SCANCODE_D]) xcord += speed;
+			float dx = 0;
+			float dy = 0;
+			if (keys[SDL_SCANCODE_W]) dy -= 1;
+			if (keys[SDL_SCANCODE_S]) dy += 1;
+			if (keys[SDL_SCANCODE_A]) dx -= 1;
+			if (keys[SDL_SCANCODE_D]) dx += 1;
+
+			if (dx != 0 && dy != 0) {
+				float diagonalScaling = 0.7071f;
+				dx *= diagonalScaling;
+				dy *= diagonalScaling;
+			}
+			xcord += dx * speed;
+			ycord += dy * speed;
 		}
 	}
 	void HandleArrows(float speed) {
-		int numkeys;
-		const bool* keys = (const bool*)SDL_GetKeyboardState(&numkeys);
+		size_t numkeys; // SDL3 uses size_t instead of int
+		const bool* keys = SDL_GetKeyboardState(NULL);
 
 		if (keys) {
-			if (keys[SDL_SCANCODE_UP]) ycord -= speed;
-			if (keys[SDL_SCANCODE_DOWN]) ycord += speed;
-			if (keys[SDL_SCANCODE_LEFT]) xcord -= speed;
-			if (keys[SDL_SCANCODE_RIGHT]) xcord += speed;
+			float dx = 0;
+			float dy = 0;
+
+			if (keys[SDL_SCANCODE_UP])    dy -= 1.0f;
+			if (keys[SDL_SCANCODE_DOWN])  dy += 1.0f;
+			if (keys[SDL_SCANCODE_LEFT])  dx -= 1.0f;
+			if (keys[SDL_SCANCODE_RIGHT]) dx += 1.0f;
+
+			if (dx != 0 && dy != 0) {
+				float diagonalScaling = 0.7071f;
+				dx *= diagonalScaling;
+				dy *= diagonalScaling;
+			}
+			xcord += dx * speed;
+			ycord += dy * speed;
 		}
 	}
 	void HandleALLInput(float speed) {
@@ -180,6 +229,7 @@ public:
 		HandleArrows(speed);
 	}
 };
+
 enum LudasFlags {
 	VIDEO = 0x01,
 	AUDIO = 0x02,
@@ -284,6 +334,40 @@ void CapTo240FPS() {
 	if (nextFrameTime == 0) nextFrameTime = now;
 
 	Uint64 frameBudget = 1000000000 / 240; // nanoseconds for 240 FPS
+	nextFrameTime += frameBudget;
+
+	if (nextFrameTime > now) {
+		SDL_DelayPrecise(nextFrameTime - now);
+	}
+	else {
+		// We are behind schedule, don't wait!
+		nextFrameTime = now;
+	}
+}
+void CapTo120FPS() {
+	static Uint64 nextFrameTime = 0;
+	Uint64 now = SDL_GetTicksNS();
+
+	if (nextFrameTime == 0) nextFrameTime = now;
+
+	Uint64 frameBudget = 1000000000 / 120; // nanoseconds for 120 FPS
+	nextFrameTime += frameBudget;
+
+	if (nextFrameTime > now) {
+		SDL_DelayPrecise(nextFrameTime - now);
+	}
+	else {
+		// We are behind schedule, don't wait!
+		nextFrameTime = now;
+	}
+}
+void CapTo60FPS() {
+	static Uint64 nextFrameTime = 0;
+	Uint64 now = SDL_GetTicksNS();
+
+	if (nextFrameTime == 0) nextFrameTime = now;
+
+	Uint64 frameBudget = 1000000000 / 60; // nanoseconds for 60 FPS
 	nextFrameTime += frameBudget;
 
 	if (nextFrameTime > now) {
@@ -404,3 +488,26 @@ inline void CheckFixColliding(Object& a, Object& b) {
 	UpdateCollider(a);
 	UpdateCollider(b);
 }
+// camera stuff
+void CameraHandleWASD(Camera& cam, float speed) {
+	int numkeys;
+	const bool* keys = (const bool*)SDL_GetKeyboardState(&numkeys);
+
+	if (keys) {
+		if (keys[SDL_SCANCODE_W]) cam.y -= speed;
+		if (keys[SDL_SCANCODE_S]) cam.y += speed;
+		if (keys[SDL_SCANCODE_A]) cam.x -= speed;
+		if (keys[SDL_SCANCODE_D]) cam.x += speed;
+	}
+}
+void CameraFollowObject(Camera& cam, const Object& obj) {
+	cam.x = obj.xcord;
+	cam.y = obj.ycord;
+}
+inline void CameraFollowSmooth(Camera& cam, const Object& target) {
+	float dt = GetDeltaTime();
+
+	cam.x += (target.xcord - cam.x) * cam.smooth * dt;
+	cam.y += (target.ycord - cam.y) * cam.smooth * dt;
+}
+
