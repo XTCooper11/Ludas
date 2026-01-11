@@ -74,7 +74,7 @@ It’s trying to teach you *why those engines exist*.
 - UI Tools
 - Simple ECS
 
-Nothing here is promised.
+The Roadmap *will* change and be very fluid based on what I (XTCooper11) want, check the latest release it will have the plan for the next version. This "Roadmap" for the next version will be most accurate. [Releases](https://github.com/The-Ludas-Project/The-Ludas-Framework/releases)
 
 ---
 
