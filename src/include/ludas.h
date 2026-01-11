@@ -1,12 +1,12 @@
 #pragma once
 /*  ANYONE CHECKING THE SOURCE FOR INFO
 	SEE THE DOCS ON GITHUB IN THE WIKI SECTION
-	USE THE LINK: https://github.com/XTCooper11/Ludas/wiki
+	USE THE LINK: https://github.com/The-Ludas-Project/The-Ludas-Framework/wiki
 */
-// Dev to Do: Create CheckCollision, ResolveCollision, and SetCollisionBox functions
 #define SDL_MAIN_HANDLED
 #include "SDL3/SDL.h"
 #include "SDL3_image/SDL_image.h"
+#include "SDL3_ttf/SDL_ttf.h"
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -234,7 +234,8 @@ enum LudasFlags {
 	VIDEO = 0x01,
 	AUDIO = 0x02,
 	INPUT = 0x04,
-	LUDAS_EVERYTHING = (VIDEO | AUDIO | INPUT)
+	UI = 0x08,
+	LUDAS_EVERYTHING = (VIDEO | AUDIO | INPUT | UI)
 };
 bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* APIChoice) {
 	uint32_t sdlFlags = 0;
@@ -255,6 +256,14 @@ bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* API
 			LudasOUT(SDL_GetError());
 			SDL_Quit();
 			return false;
+		}
+
+		if (flags & UI) {
+			if (TTF_Init() == -1) {
+				LudasOUT("SDL_ttf Failed: " + std::string(SDL_GetError()));
+				return false;
+			}
+			LudasOUT("UI System Initialized!");
 		}
 
 		if (APIChoice == "auto") APIChoice = NULL;
@@ -282,6 +291,7 @@ bool HasQuit(SDL_Event &event) {
 	}
 }
 void CloseALL(SDL_Renderer* renderer, SDL_Window* window) {
+	TTF_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -327,13 +337,13 @@ void TerminalFPS() {
 		frameCount = 0;
 	}
 }
-void CapTo240FPS() {
+void CapFPS(int cap) {
 	static Uint64 nextFrameTime = 0;
 	Uint64 now = SDL_GetTicksNS();
 
 	if (nextFrameTime == 0) nextFrameTime = now;
 
-	Uint64 frameBudget = 1000000000 / 240; // nanoseconds for 240 FPS
+	Uint64 frameBudget = 1000000000 / cap; // nanoseconds for the cap
 	nextFrameTime += frameBudget;
 
 	if (nextFrameTime > now) {
@@ -506,8 +516,6 @@ void CameraFollowObject(Camera& cam, const Object& obj) {
 }
 inline void CameraFollowSmooth(Camera& cam, const Object& target) {
 	float dt = GetDeltaTime();
-
 	cam.x += (target.xcord - cam.x) * cam.smooth * dt;
 	cam.y += (target.ycord - cam.y) * cam.smooth * dt;
 }
-
