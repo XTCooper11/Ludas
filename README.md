@@ -11,7 +11,7 @@ Ludas intentionally favors **clarity over abstraction**. If something happens, y
 
 ⚠️ **Early Development**
 
-Ludas is *stable* enough to provide complete projects. Many feautures are yet to come that will increase its power.
+Ludas is *stable* enough to provide complete projects. Many feautures are yet to come that will allow for more complex games.
 
 ---
 
@@ -22,7 +22,7 @@ Ludas is *stable* enough to provide complete projects. Many feautures are yet to
 - Avoid overengineering and premature abstractions
 - Provide a clear path from:
   - SDL-based rendering → native graphics APIs (OpenGL / Vulkan / Metal)
-- Stay **C++-first**, with minimal dependencies
+- Stay **C++ first**, with minimal dependencies
 
 This is not trying to compete with Unity, Unreal, or Godot.  
 It’s trying to teach you *why those engines exist*.
@@ -74,7 +74,7 @@ It’s trying to teach you *why those engines exist*.
 - UI Tools
 - Simple ECS
 
-The Roadmap *will* change and be very fluid based on what I (XTCooper11) want, check the latest release it will have the plan for the next version. This "Roadmap" for the next version will be most accurate. [Releases](https://github.com/The-Ludas-Project/The-Ludas-Framework/releases)
+Check the latest release for the "goals" of the next release.
 
 ---
 
