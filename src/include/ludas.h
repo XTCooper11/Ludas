@@ -12,13 +12,17 @@
 #include <iomanip>
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <algorithm>
+#include <functional>
+
 #ifndef LUDAS_H
 #define LUDAS_H
 struct Camera {
-	float x = 0.0f;
-	float y = 0.0f;
-	float zoom = 1.0f;     // 1.0 = normal, >1 zoom in, <1 zoom out
-	float smooth = 8.0f;
+	float x = 0.f;
+	float y = 0.f;
+	float zoom = 1.f;
+	float smooth = 350.f;
 };
 
 extern Camera mainCamera;
@@ -65,7 +69,7 @@ public:
 	float scale = 1;
 	float angle = 0;
 	// how it will look
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	int color[4] = { 255,255,255,255 };
 	SDL_FlipMode flip = SDL_FLIP_NONE;
 
@@ -74,6 +78,8 @@ public:
 	bool affectPhysics = false;
 	bool hasCollider = false;
 	bool isStatic = false;
+	bool isGrounded = true;
+	std::string tag;
 	//Physics
 	float xvel = 0;     // Velocity
 	float yvel = 0;
@@ -138,12 +144,10 @@ public:
 	void UpdateState(float deltaTime) {
 		if (!isActive && !affectPhysics) return;
 
-		//Apply Gravity
 		yvel += gravity * deltaTime;
-
-		//Apply Movement
 		xcord += xvel * deltaTime;
 		ycord += yvel * deltaTime;
+
 	}
 	void PushObject(float xforce, float yforce) {
 		if (!isActive) return;
@@ -203,7 +207,7 @@ public:
 		}
 	}
 	void HandleArrows(float speed) {
-		size_t numkeys; // SDL3 uses size_t instead of int
+		size_t numkeys;
 		const bool* keys = SDL_GetKeyboardState(NULL);
 
 		if (keys) {
@@ -228,30 +232,69 @@ public:
 		HandleWASD(speed);
 		HandleArrows(speed);
 	}
-};
+	void HandleSideScroll(float speed, float jumpForce, float deltaTime) {
+		const bool* keys = SDL_GetKeyboardState(NULL);
+		if (keys) {
+			if (keys[SDL_SCANCODE_A]) xcord -= speed * deltaTime;
+			if (keys[SDL_SCANCODE_D]) xcord += speed * deltaTime;
 
+			if ((keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_SPACE]) && isGrounded) {
+				yvel = -jumpForce;
+				isGrounded = false;
+			}
+		}
+	}
+	void Destory() {
+		if (texture) {
+            SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
+		delete this;
+	}
+};
 enum LudasFlags {
+
 	VIDEO = 0x01,
 	AUDIO = 0x02,
 	INPUT = 0x04,
 	UI = 0x08,
+	// Window Modes
+	WINDOWED = 0x10,
+	FULLSCREEN = 0x20,
+	WINDOWED_FULLSCREEN = 0x40,
+	WINDOWED_MAXIMIZED = 0x80,
+
 	LUDAS_EVERYTHING = (VIDEO | AUDIO | INPUT | UI)
 };
-bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* APIChoice) {
-	uint32_t sdlFlags = 0;
 
-	// Map your flags to SDL3 flags
-	if (flags & VIDEO) sdlFlags |= SDL_INIT_VIDEO;
-	if (flags & AUDIO) sdlFlags |= SDL_INIT_AUDIO;
-	if (flags & INPUT) sdlFlags |= SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK;
+bool StartLudas(const char* title, int w, int h, uint32_t flags,const char* APIChoice) {
+	uint32_t sdlInitFlags = 0;
 
-	if (!SDL_Init(sdlFlags)) {
+	if (flags & VIDEO) sdlInitFlags |= SDL_INIT_VIDEO;
+	if (flags & AUDIO) sdlInitFlags |= SDL_INIT_AUDIO;
+	if (flags & INPUT) sdlInitFlags |= SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK;
+
+	if (!SDL_Init(sdlInitFlags)) {
 		SDL_Log("SDL_Init Failed: %s", SDL_GetError());
 		return false;
 	}
-	// Only create window/renderer if Video was requested
+
 	if (flags & VIDEO) {
-		window = SDL_CreateWindow(title, w, h, 0);
+		uint32_t windowFlags = 0;
+
+		if (flags & FULLSCREEN) {
+			windowFlags |= SDL_WINDOW_FULLSCREEN;
+		}
+		else if (flags & WINDOWED_MAXIMIZED) {
+			// This gives you the "Bar" at the top, but fills the screen
+			windowFlags |= SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
+		}
+		else if (flags & WINDOWED) {
+			windowFlags |= SDL_WINDOW_RESIZABLE; // Standard window with the bar
+		}
+
+		window = SDL_CreateWindow(title, w, h, windowFlags);
+
 		if (!window) {
 			LudasOUT(SDL_GetError());
 			SDL_Quit();
@@ -263,23 +306,18 @@ bool StartLudas(const char* title, int w, int h, uint32_t flags, const char* API
 				LudasOUT("SDL_ttf Failed: " + std::string(SDL_GetError()));
 				return false;
 			}
-			LudasOUT("UI System Initialized!");
 		}
 
 		if (APIChoice == "auto") APIChoice = NULL;
-		renderer = SDL_CreateRenderer(window, APIChoice); // No SDL_Renderer* here
+		renderer = SDL_CreateRenderer(window, APIChoice);
+
 		if (!renderer) {
 			LudasOUT(SDL_GetError());
 			SDL_DestroyWindow(window);
 			SDL_Quit();
 			return false;
 		}
-	
-		LudasOUT(SDL_GetRendererName(renderer));
-		LudasOUT("Renderer and Window Created!");
-
 	}
-
 	return true;
 }
 bool HasQuit(SDL_Event &event) {
@@ -337,7 +375,7 @@ void TerminalFPS() {
 		frameCount = 0;
 	}
 }
-void CapFPS(int cap) {
+inline void CapFPS(int cap) {
 	static Uint64 nextFrameTime = 0;
 	Uint64 now = SDL_GetTicksNS();
 
@@ -354,56 +392,19 @@ void CapFPS(int cap) {
 		nextFrameTime = now;
 	}
 }
-void CapTo120FPS() {
-	static Uint64 nextFrameTime = 0;
-	Uint64 now = SDL_GetTicksNS();
-
-	if (nextFrameTime == 0) nextFrameTime = now;
-
-	Uint64 frameBudget = 1000000000 / 120; // nanoseconds for 120 FPS
-	nextFrameTime += frameBudget;
-
-	if (nextFrameTime > now) {
-		SDL_DelayPrecise(nextFrameTime - now);
-	}
-	else {
-		// We are behind schedule, don't wait!
-		nextFrameTime = now;
-	}
-}
-void CapTo60FPS() {
-	static Uint64 nextFrameTime = 0;
-	Uint64 now = SDL_GetTicksNS();
-
-	if (nextFrameTime == 0) nextFrameTime = now;
-
-	Uint64 frameBudget = 1000000000 / 60; // nanoseconds for 60 FPS
-	nextFrameTime += frameBudget;
-
-	if (nextFrameTime > now) {
-		SDL_DelayPrecise(nextFrameTime - now);
-	}
-	else {
-		// We are behind schedule, don't wait!
-		nextFrameTime = now;
-	}
-}
 inline void UpdateCollider(Object& obj) {
-	// half sizes
-	float hw = obj.w * 0.5f;
-	float hh = obj.h * 0.5f;
+	float hw = (obj.w * 0.5f) * obj.scale;
+	float hh = (obj.h * 0.5f) * obj.scale;
 
 	// rectangle corners before rotation
 	float cornersX[4] = { obj.xcord - hw, obj.xcord + hw, obj.xcord + hw, obj.xcord - hw };
 	float cornersY[4] = { obj.ycord - hh, obj.ycord - hh, obj.ycord + hh, obj.ycord + hh };
 
-	// rotate each corner around the object's center
 	float rad = obj.angle * 3.14159265f / 180.0f;
 	float s = sin(rad);
 	float c = cos(rad);
 
 	for (int i = 0; i < 4; i++) {
-		// translate point to origin
 		float px = cornersX[i] - obj.xcord;
 		float py = cornersY[i] - obj.ycord;
 
@@ -411,7 +412,6 @@ inline void UpdateCollider(Object& obj) {
 		float xnew = px * c - py * s;
 		float ynew = px * s + py * c;
 
-		// translate back
 		cornersX[i] = xnew + obj.xcord;
 		cornersY[i] = ynew + obj.ycord;
 	}
@@ -440,63 +440,34 @@ inline bool IsCollidingWith(const Object& a, const Object& b) { // returns a boo
 		);
 }
 inline void CheckFixColliding(Object& a, Object& b) {
-	// Update colliders first
 	UpdateCollider(a);
 	UpdateCollider(b);
 
 	if (!IsCollidingWith(a, b)) return;
 
-	float overlapX = 0.0f;
-	float overlapY = 0.0f;
+	float aMidX = a.xcord;
+	float aMidY = a.ycord;
+	float bMidX = b.xcord;
+	float bMidY = b.ycord;
 
-	if (a.xcord < b.xcord)
-		overlapX = a.collider[MAX_X] - b.collider[MIN_X];
-	else
-		overlapX = b.collider[MAX_X] - a.collider[MIN_X];
+	float dx = aMidX - bMidX;
+	float dy = aMidY - bMidY;
 
-	if (a.ycord < b.ycord)
-		overlapY = a.collider[MAX_Y] - b.collider[MIN_Y];
-	else
-		overlapY = b.collider[MAX_Y] - a.collider[MIN_Y];
+	float combinedHalfW = ((a.w * a.scale) + (b.w * b.scale)) * 0.5f;
+	float combinedHalfH = ((a.h * a.scale) + (b.h * b.scale)) * 0.5f;
 
-	// Move along the axis with the smallest overlap
+	float overlapX = combinedHalfW - std::abs(dx);
+	float overlapY = combinedHalfH - std::abs(dy);
+
 	if (overlapX < overlapY) {
-		float move = overlapX;
-		if (!a.isStatic && !b.isStatic) {
-			move *= 0.5f;
-			if (a.xcord < b.xcord) { a.xcord -= move; b.xcord += move; }
-			else { a.xcord += move; b.xcord -= move; }
-		}
-		else if (!a.isStatic) {
-			if (a.xcord < b.xcord) a.xcord -= move;
-			else                    a.xcord += move;
-		}
-		else if (!b.isStatic) {
-			if (a.xcord < b.xcord) b.xcord += move;
-			else                    b.xcord -= move;
-		}
-		// if both static, do nothing
+		if (dx > 0) a.xcord += overlapX; else a.xcord -= overlapX;
+		a.xvel = 0;
 	}
 	else {
-		float move = overlapY;
-		if (!a.isStatic && !b.isStatic) {
-			move *= 0.5f;
-			if (a.ycord < b.ycord) { a.ycord -= move; b.ycord += move; }
-			else { a.ycord += move; b.ycord -= move; }
-		}
-		else if (!a.isStatic) {
-			if (a.ycord < b.ycord) a.ycord -= move;
-			else                    a.ycord += move;
-		}
-		else if (!b.isStatic) {
-			if (a.ycord < b.ycord) b.ycord += move;
-			else                    b.ycord -= move;
-		}
+		if (dy > 0) a.ycord += overlapY; else a.ycord -= overlapY;
+		if (dy < 0) a.isGrounded = true;
+		a.yvel = 0;
 	}
-
-	// Update colliders again, just in case
-	UpdateCollider(a);
-	UpdateCollider(b);
 }
 // camera stuff
 void CameraHandleWASD(Camera& cam, float speed) {
@@ -519,3 +490,59 @@ inline void CameraFollowSmooth(Camera& cam, const Object& target) {
 	cam.x += (target.xcord - cam.x) * cam.smooth * dt;
 	cam.y += (target.ycord - cam.y) * cam.smooth * dt;
 }
+inline bool IsGroundedOn(const Object& a, const Object& b) {
+	// A is the object we are checking
+	return (a.collider[MAX_Y] >= b.collider[MIN_Y] - 1.0f &&
+		a.collider[MIN_Y] < b.collider[MIN_Y] &&
+		a.collider[MAX_X] > b.collider[MIN_X] &&
+		a.collider[MIN_X] < b.collider[MAX_X]);
+}
+class Group {
+public:
+	std::string name;
+	std::vector<Object*> members;
+	std::string tag = "default";
+
+	Group(std::string groupName) : name(groupName) {}
+
+	void Add(Object* obj) {
+		if (obj) {
+			members.push_back(obj);
+		}
+	}
+
+	void Remove(Object* obj) {
+		members.erase(std::remove(members.begin(), members.end(), obj), members.end());
+	}
+
+	// Update all objects in this group
+	void UpdateAll(float deltaTime) {
+		for (auto* obj : members) {
+			if (obj->isActive) {
+				obj->UpdateState(deltaTime);
+			}
+		}
+	}
+
+	// Render all objects in this group
+	void RenderAll(SDL_Renderer* renderer, const Camera& cam) {
+		for (auto* obj : members) {
+			if (obj->isActive) {
+				obj->Render(renderer, cam);
+			}
+		}
+	}
+
+	void CheckCollisionWith(Object& target, std::function<void(Object&, Object&)> onCollide = nullptr) {
+		for (auto* obj : members) {
+			if (!obj->isActive || !obj->hasCollider) continue;
+
+			if (IsCollidingWith(*obj, target)) {
+
+				if (onCollide != nullptr) {
+					onCollide(*obj, target);
+				}
+			}
+		}
+	}
+};
