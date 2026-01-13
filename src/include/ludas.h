@@ -22,7 +22,7 @@ struct Camera {
 	float x = 0.f;
 	float y = 0.f;
 	float zoom = 1.f;
-	float smooth = 100.f;
+	float smooth = 350.f;
 };
 
 extern Camera mainCamera;
@@ -69,7 +69,7 @@ public:
 	float scale = 1;
 	float angle = 0;
 	// how it will look
-	SDL_Texture* texture = NULL;
+	SDL_Texture* texture = nullptr;
 	int color[4] = { 255,255,255,255 };
 	SDL_FlipMode flip = SDL_FLIP_NONE;
 
@@ -245,6 +245,10 @@ public:
 		}
 	}
 	void Destory() {
+		if (texture) {
+            SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
 		delete this;
 	}
 };
@@ -371,7 +375,7 @@ void TerminalFPS() {
 		frameCount = 0;
 	}
 }
-void CapFPS(int cap) {
+inline void CapFPS(int cap) {
 	static Uint64 nextFrameTime = 0;
 	Uint64 now = SDL_GetTicksNS();
 
@@ -436,62 +440,34 @@ inline bool IsCollidingWith(const Object& a, const Object& b) { // returns a boo
 		);
 }
 inline void CheckFixColliding(Object& a, Object& b) {
-	// Update colliders first
 	UpdateCollider(a);
 	UpdateCollider(b);
 
 	if (!IsCollidingWith(a, b)) return;
 
-	float overlapX = 0.0f;
-	float overlapY = 0.0f;
+	float aMidX = a.xcord;
+	float aMidY = a.ycord;
+	float bMidX = b.xcord;
+	float bMidY = b.ycord;
 
-	if (a.xcord < b.xcord)
-		overlapX = a.collider[MAX_X] - b.collider[MIN_X];
-	else
-		overlapX = b.collider[MAX_X] - a.collider[MIN_X];
+	float dx = aMidX - bMidX;
+	float dy = aMidY - bMidY;
 
-	if (a.ycord < b.ycord)
-		overlapY = a.collider[MAX_Y] - b.collider[MIN_Y];
-	else
-		overlapY = b.collider[MAX_Y] - a.collider[MIN_Y];
+	float combinedHalfW = ((a.w * a.scale) + (b.w * b.scale)) * 0.5f;
+	float combinedHalfH = ((a.h * a.scale) + (b.h * b.scale)) * 0.5f;
 
-	// Move along the axis with the smallest overlap
+	float overlapX = combinedHalfW - std::abs(dx);
+	float overlapY = combinedHalfH - std::abs(dy);
+
 	if (overlapX < overlapY) {
-		float move = overlapX;
-		if (!a.isStatic && !b.isStatic) {
-			move *= 0.5f;
-			if (a.xcord < b.xcord) { a.xcord -= move; b.xcord += move; }
-			else { a.xcord += move; b.xcord -= move; }
-		}
-		else if (!a.isStatic) {
-			if (a.xcord < b.xcord) a.xcord -= move;
-			else                    a.xcord += move;
-		}
-		else if (!b.isStatic) {
-			if (a.xcord < b.xcord) b.xcord += move;
-			else                    b.xcord -= move;
-		}
+		if (dx > 0) a.xcord += overlapX; else a.xcord -= overlapX;
+		a.xvel = 0;
 	}
 	else {
-		float move = overlapY;
-		if (!a.isStatic && !b.isStatic) {
-			move *= 0.5f;
-			if (a.ycord < b.ycord) { a.ycord -= move; b.ycord += move; }
-			else { a.ycord += move; b.ycord -= move; }
-		}
-		else if (!a.isStatic) {
-			if (a.ycord < b.ycord) a.ycord -= move;
-			else                    a.ycord += move;
-		}
-		else if (!b.isStatic) {
-			if (a.ycord < b.ycord) b.ycord += move;
-			else                    b.ycord -= move;
-		}
+		if (dy > 0) a.ycord += overlapY; else a.ycord -= overlapY;
+		if (dy < 0) a.isGrounded = true;
+		a.yvel = 0;
 	}
-
-	// Update colliders again, just in case
-	UpdateCollider(a);
-	UpdateCollider(b);
 }
 // camera stuff
 void CameraHandleWASD(Camera& cam, float speed) {
