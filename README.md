@@ -111,14 +111,6 @@ If you’re unsure, open an issue or discussion first or DM me on Discord "XT Co
 
 ---
 
-## Building & Usage
-
-**Right now**, Ludas is distributed as a **single-header implementation**. (Things will change as the project goes on)
-You include it, define the implementation once, and go.
-SDL3 and SDL3-image are REQUIRED.
-
----
-
 ## License
 This framework is licensed under the **BSD 3-Clause License**.
 
