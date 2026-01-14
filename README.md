@@ -126,6 +126,10 @@ Copyright (c) 2026, XTCooper11. All rights reserved.
 > See the [LICENSE](./LICENSE) file for the full legal text.
 ---
 
+## TL;DR: Ludas Game Engine
+
+**Ludas** is a lightweight, early-stage C++ framework built on **SDL3** designed to teach game engine internals through transparency. Rather than offering a "black box" experience like Unity or Unreal, it favors **clarity over abstraction**, allowing developers to trace exactly how rendering, input, and physics function. Currently, it supports multiple backends (Vulkan, OpenGL, Metal, D3D11, software), high-resolution timing, and basic 2D object management. Licensed under **BSD 3-Clause**, it is a "C++ first" tool for those who want to build real projects while learning the "why" behind engine architecture.
+
 ## Final Note
 
 Ludas exists to hold your hand and allow you to fly alone, your choice.
