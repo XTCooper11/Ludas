@@ -79,7 +79,7 @@ public:
 	bool hasCollider = false;
 	bool isStatic = false;
 	bool isGrounded = true;
-	std::string tag;
+	std::string tag = "world";
 	//Physics
 	float xvel = 0;     // Velocity
 	float yvel = 0;
@@ -145,6 +145,7 @@ public:
 		if (!isActive && !affectPhysics) return;
 
 		yvel += gravity * deltaTime;
+
 		xcord += xvel * deltaTime;
 		ycord += yvel * deltaTime;
 
@@ -251,6 +252,15 @@ public:
         }
 		delete this;
 	}
+	void PingPong(float minX, float maxX, float speed) {
+		float center = (minX + maxX) / 2.0f;
+		float range = (maxX - minX) / 2.0f;
+
+		float time = SDL_GetTicks() * (speed / 1000.0f);
+
+		this->xcord = center + sin(time) * range;
+
+	}
 };
 enum LudasFlags {
 
@@ -356,21 +366,15 @@ void TerminalFPS() {
 	accumulator += GetDeltaTime();
 	frameCount++;
 
-	// Update every 0.5 seconds to keep the terminal readable
 	if (accumulator >= 0.5f) {
-		// Clear the screen first
-#if defined(SDL_PLATFORM_WINDOWS)
-		system("cls");
-#else
-		system("clear");
-#endif
 		float avgFPS = (float)frameCount / accumulator;
-		// Format the string
-		std::stringstream ss;
-		ss << " DEBUG MONITOR" << "\n" << " FPS: " << std::fixed << std::setprecision(2) << avgFPS << "\n";
-		LudasOUT(ss.str());
 
-		// Reset counters
+		std::cout << "\033[H\033[J";
+
+		std::cout << " [ DEBUG MONITOR ]\n";
+		std::cout << " FPS: " << std::fixed << std::setprecision(2) << avgFPS << "\n";
+		std::cout << " DeltaTime: " << (accumulator / frameCount) * 1000.0f << " ms\n";
+
 		accumulator = 0.0f;
 		frameCount = 0;
 	}
@@ -490,12 +494,17 @@ inline void CameraFollowSmooth(Camera& cam, const Object& target) {
 	cam.x += (target.xcord - cam.x) * cam.smooth * dt;
 	cam.y += (target.ycord - cam.y) * cam.smooth * dt;
 }
-inline bool IsGroundedOn(const Object& a, const Object& b) {
-	// A is the object we are checking
-	return (a.collider[MAX_Y] >= b.collider[MIN_Y] - 1.0f &&
-		a.collider[MIN_Y] < b.collider[MIN_Y] &&
-		a.collider[MAX_X] > b.collider[MIN_X] &&
-		a.collider[MIN_X] < b.collider[MAX_X]);
+bool CheckIsGrounded(Object& obj, const std::vector<Object*>& platforms) {
+	// Create a tiny box just below the object
+	float footY = obj.collider[MAX_Y] + 1.0f;
+	for (auto platform : platforms) {
+		if (footY >= platform->collider[MIN_Y] &&
+			obj.collider[MIN_X] < platform->collider[MAX_X] &&
+			obj.collider[MAX_X] > platform->collider[MIN_X]) {
+			return true;
+		}
+	}
+	return false;
 }
 class Group {
 public:
